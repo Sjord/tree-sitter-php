@@ -60,6 +60,8 @@ operators = [
     "$a ?? $b",
     "clone $a",
     "new $a",
+    "(bool)$a",
+    "@$a",
 ]
 
 assignment = [
