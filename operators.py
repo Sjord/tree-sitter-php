@@ -50,7 +50,8 @@ operators = [
     "! $a",
     "$a && $b",
     "$a || $b",
-    "$a instanceof stdClass"
+    "$a instanceof stdClass",
+    "$a . $b"
 ]
 
 assignment = [
@@ -78,7 +79,7 @@ def find_correct(statement, parens):
     if parens is None:
         return None
     
-    for a, b, c in [(1, 2, 3), (101, 256, 2), (17, 29, 3), (1.0001, 2, 1.0002), (1237, 349525, 1231)]:
+    for a, b, c in [(1, 5, 7), (101, 256, 2), (17, 29, 3), (1.0001, 2, 1.0002), (1237, 349525, 1231)]:
         correct = run_php(statement, a, b, c)
         p0 = run_php(parens[0], a, b, c)
         p1 = run_php(parens[1], a, b, c)
