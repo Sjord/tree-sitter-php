@@ -51,7 +51,15 @@ operators = [
     "$a && $b",
     "$a || $b",
     "$a instanceof stdClass",
-    "$a . $b"
+    "$a . $b",
+    "print $a",
+    "yield $a",
+    "yield from $a",
+    "$a ? $b : -1",
+    "$a ? -1 : $b",
+    "$a ?? $b",
+    "clone $a",
+    "new $a",
 ]
 
 assignment = [
@@ -79,7 +87,7 @@ def find_correct(statement, parens):
     if parens is None:
         return None
     
-    for a, b, c in [(1, 5, 7), (101, 256, 2), (17, 29, 3), (1.0001, 2, 1.0002), (1237, 349525, 1231)]:
+    for a, b, c in [(0, 1, 2), (1, 5, 7), (101, 256, 2), (17, 29, 3), (1.0001, 2, 1.0002), (1237, 349525, 1231)]:
         correct = run_php(statement, a, b, c)
         p0 = run_php(parens[0], a, b, c)
         p1 = run_php(parens[1], a, b, c)
@@ -104,17 +112,6 @@ def get_parens(statement):
     p1 = "(" + statement[:c+2] + ")" + statement[c+2:]
     p2 = statement[:c] + "(" + statement[c:] + ")"
     return [p1, p2]
-
-
-def expression_kind(statement):
-    ex1 = "binary_expression"
-    ex2 = "binary_expression"
-    for oper in assignment:
-        if f"$a {oper} $c" in statement:
-            ex1 = "augmented_assignment_expression"
-        if f"$c {oper} $b" in statement:
-            ex2 = "augmented_assignment_expression"
-    return [ex1, ex2]
 
 
 def remove_parenthesized_expression(tree):
@@ -146,13 +143,25 @@ def correct_tree(paren):
     return tree
 
 
+def combine_operators(x, y):
+    y = y.replace("$a", "$c")
+    to_replace = "$a"
+    if "$b" in x:
+        to_replace = "$b"
+    
+    stmt = x.replace(to_replace, y)
+    p1 = x.replace(to_replace, "(" + y + ")")
+    p2 = "(" + x.replace(to_replace, y.replace("$c", "$c)"))
+    return stmt, [p1, p2]
+
+
 if True:
     i = 0
     for x in operators:
         if "$b" in x:
             for y in operators:
-                statement = x.replace("$b", y.replace("$a", "$c"))
-                parens = get_parens(statement)
+                statement, parens = combine_operators(x, y)
+                # parens = get_parens(statement)
                 correct = find_correct(statement, parens)
                 if correct is not None:
                     print("==========================")
