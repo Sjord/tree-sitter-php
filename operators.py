@@ -82,7 +82,7 @@ assignment = [
 
 def run_php(statement, a, b, c):
     cmd = f'$a = {a}; $b = {b}; $c = {c}; echo {statement}; echo "\n"; echo $a;'
-    proc = run(["php", "-r", cmd], capture_output=True)
+    proc = run(["/usr/local/bin/php", "-r", cmd], capture_output=True)
     return proc.stdout
 
 def find_correct(statement, parens):
